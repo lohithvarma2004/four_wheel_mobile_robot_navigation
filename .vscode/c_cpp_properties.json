@@ -1,0 +1,47 @@
+{
+  "configurations": [
+    {
+      "browse": {
+        "databaseFilename": "${default}",
+        "limitSymbolsToIncludedHeaders": false
+      },
+      "includePath": [
+        "/home/lohithvarma2004/ros2_ws/install/uuv_world_ros_plugins_msgs/include/**",
+        "/home/lohithvarma2004/ros2_ws/install/uuv_sensor_ros_plugins_msgs/include/**",
+        "/home/lohithvarma2004/assignment/install/uuv_world_ros_plugins/include/**",
+        "/home/lohithvarma2004/assignment/install/uuv_world_ros_plugins_msgs/include/**",
+        "/home/lohithvarma2004/assignment/install/uuv_world_plugins/include/**",
+        "/home/lohithvarma2004/assignment/install/uuv_thruster_manager/include/**",
+        "/home/lohithvarma2004/assignment/install/uuv_sensor_ros_plugins_msgs/include/**",
+        "/home/lohithvarma2004/assignment/install/uuv_gazebo_ros_plugins/include/**",
+        "/home/lohithvarma2004/assignment/install/uuv_gazebo_ros_plugins_msgs/include/**",
+        "/home/lohithvarma2004/assignment/install/uuv_gazebo_plugins/include/**",
+        "/home/lohithvarma2004/assignment/install/uuv_control_msgs/include/**",
+        "/home/lohithvarma2004/assignment/install/uuv_auv_control_allocator/include/**",
+        "/home/lohithvarma2004/assignment/install/ros2_control_demo_example_9/include/**",
+        "/home/lohithvarma2004/assignment/install/ros2_control_demo_example_8/include/**",
+        "/home/lohithvarma2004/assignment/install/ros2_control_demo_example_7/include/**",
+        "/home/lohithvarma2004/assignment/install/ros2_control_demo_example_6/include/**",
+        "/home/lohithvarma2004/assignment/install/ros2_control_demo_example_5/include/**",
+        "/home/lohithvarma2004/assignment/install/ros2_control_demo_example_4/include/**",
+        "/home/lohithvarma2004/assignment/install/ros2_control_demo_example_3/include/**",
+        "/home/lohithvarma2004/assignment/install/ros2_control_demo_example_2/include/**",
+        "/home/lohithvarma2004/assignment/install/ros2_control_demo_example_14/include/**",
+        "/home/lohithvarma2004/assignment/install/ros2_control_demo_example_12/include/**",
+        "/home/lohithvarma2004/assignment/install/ros2_control_demo_example_11/include/**",
+        "/home/lohithvarma2004/assignment/install/ros2_control_demo_example_10/include/**",
+        "/home/lohithvarma2004/assignment/install/ros2_control_demo_example_1/include/**",
+        "/opt/ros/humble/include/**",
+        "/home/lohithvarma2004/trail1/src/four_wheel_mobile_robot_navigation/include/**",
+        "include/**",
+        "/usr/include/**"
+      ],
+      "name": "ROS",
+      "intelliSenseMode": "gcc-x64",
+      "compilerPath": "/usr/bin/gcc",
+      "cStandard": "gnu11",
+      "cppStandard": "c++14"
+    }
+  ],
+  "version": 4
+}

@@ -1,0 +1,38 @@
+{
+    "python.autoComplete.extraPaths": [
+        "/home/lohithvarma2004/ros2_ws/install/uuv_world_ros_plugins_msgs/local/lib/python3.10/dist-packages",
+        "/home/lohithvarma2004/ros2_ws/install/uuv_sensor_ros_plugins_msgs/local/lib/python3.10/dist-packages",
+        "/home/lohithvarma2004/ros2_ws/install/plankton_utils/local/lib/python3.10/dist-packages",
+        "/home/lohithvarma2004/assignment/install/uuv_world_ros_plugins_msgs/local/lib/python3.10/dist-packages",
+        "/home/lohithvarma2004/assignment/install/uuv_trajectory_control/local/lib/python3.10/dist-packages",
+        "/home/lohithvarma2004/assignment/install/uuv_thruster_manager/local/lib/python3.10/dist-packages",
+        "/home/lohithvarma2004/assignment/install/uuv_sensor_ros_plugins_msgs/local/lib/python3.10/dist-packages",
+        "/home/lohithvarma2004/assignment/install/uuv_gazebo_ros_plugins_msgs/local/lib/python3.10/dist-packages",
+        "/home/lohithvarma2004/assignment/install/uuv_control_msgs/local/lib/python3.10/dist-packages",
+        "/home/lohithvarma2004/assignment/install/uuv_control_cascaded_pid/local/lib/python3.10/dist-packages",
+        "/home/lohithvarma2004/assignment/install/uuv_auv_control_allocator/local/lib/python3.10/dist-packages",
+        "/home/lohithvarma2004/assignment/install/uuv_assistants/local/lib/python3.10/dist-packages",
+        "/home/lohithvarma2004/assignment/install/ros2_control_demo_testing/lib/python3.10/site-packages",
+        "/home/lohithvarma2004/assignment/install/plankton_utils/local/lib/python3.10/dist-packages",
+        "/opt/ros/humble/lib/python3.10/site-packages",
+        "/opt/ros/humble/local/lib/python3.10/dist-packages"
+    ],
+    "python.analysis.extraPaths": [
+        "/home/lohithvarma2004/ros2_ws/install/uuv_world_ros_plugins_msgs/local/lib/python3.10/dist-packages",
+        "/home/lohithvarma2004/ros2_ws/install/uuv_sensor_ros_plugins_msgs/local/lib/python3.10/dist-packages",
+        "/home/lohithvarma2004/ros2_ws/install/plankton_utils/local/lib/python3.10/dist-packages",
+        "/home/lohithvarma2004/assignment/install/uuv_world_ros_plugins_msgs/local/lib/python3.10/dist-packages",
+        "/home/lohithvarma2004/assignment/install/uuv_trajectory_control/local/lib/python3.10/dist-packages",
+        "/home/lohithvarma2004/assignment/install/uuv_thruster_manager/local/lib/python3.10/dist-packages",
+        "/home/lohithvarma2004/assignment/install/uuv_sensor_ros_plugins_msgs/local/lib/python3.10/dist-packages",
+        "/home/lohithvarma2004/assignment/install/uuv_gazebo_ros_plugins_msgs/local/lib/python3.10/dist-packages",
+        "/home/lohithvarma2004/assignment/install/uuv_control_msgs/local/lib/python3.10/dist-packages",
+        "/home/lohithvarma2004/assignment/install/uuv_control_cascaded_pid/local/lib/python3.10/dist-packages",
+        "/home/lohithvarma2004/assignment/install/uuv_auv_control_allocator/local/lib/python3.10/dist-packages",
+        "/home/lohithvarma2004/assignment/install/uuv_assistants/local/lib/python3.10/dist-packages",
+        "/home/lohithvarma2004/assignment/install/ros2_control_demo_testing/lib/python3.10/site-packages",
+        "/home/lohithvarma2004/assignment/install/plankton_utils/local/lib/python3.10/dist-packages",
+        "/opt/ros/humble/lib/python3.10/site-packages",
+        "/opt/ros/humble/local/lib/python3.10/dist-packages"
+    ]
+}
