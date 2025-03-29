@@ -1,32 +1,31 @@
 controller_manager:
   ros__parameters:
-    update_rate: 30.0
+    update_rate: 100  # Match Gazebo physics update rate
     use_sim_time: true
 
-    # Joint State Broadcaster publishes the state of all joints (positions, velocities, etc.)
     joint_state_broadcaster:
       type: joint_state_broadcaster/JointStateBroadcaster
 
-    # Joint Trajectory Controller commands the wheels using velocity interfaces.
-    # This controller expects a trajectory message that includes trajectory points for each wheel joint.
     joint_trajectory_controller:
       type: joint_trajectory_controller/JointTrajectoryController
-      # (Optional) You can add tolerances or smoothing parameters here if needed.
-      # trajectory_error_tolerance: 0.05
-      # stop_trajectory_duration: 0.5
 
 joint_trajectory_controller:
   ros__parameters:
-    # List the wheel joint names exactly as defined in your URDF/xacro
     joints:
       - first_wheel_joint
       - second_wheel_joint
       - third_wheel_joint
       - fourth_wheel_joint
-    # This controller uses the velocity interface for commanding the joints.
-    interface_name: velocity
     command_interfaces:
       - velocity
     state_interfaces:
       - position
       - velocity
+    gains:  # Add basic PID gains for stability
+      first_wheel_joint: {p: 0.5, i: 0.01, d: 0.1}
+      second_wheel_joint: {p: 0.5, i: 0.01, d: 0.1}
+      third_wheel_joint: {p: 0.5, i: 0.01, d: 0.1}
+      fourth_wheel_joint: {p: 0.5, i: 0.01, d: 0.1}
+    state_publish_rate: 100.0
+    action_monitor_rate: 100.0
+    interpolation_duration: 0.2

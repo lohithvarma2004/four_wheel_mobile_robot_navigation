@@ -60,11 +60,21 @@ def generate_launch_description():
         ]
     )
 
+    gzserver_proc = ExecuteProcess(
+    cmd=[
+        'gzserver',
+        '/opt/ros/humble/share/gazebo_ros/worlds/empty.world',
+        '-slibgazebo_ros_init.so',
+        '-slibgazebo_ros_factory.so'
+    ],
+    output='screen')
+
     ld = LaunchDescription()
     ld.add_action(gazebo_launch)
     ld.add_action(spawnnode)
     ld.add_action(statenode)
     ld.add_action(load_joint_state_broadcaster)
     ld.add_action(load_joint_trajectory_controller)
+    #ld.add_action(gzserver_proc)
 
     return ld

@@ -8,113 +8,104 @@
 
 using namespace std::chrono_literals;
 
-class DifferentialDriveController : public rclcpp::Node
+class FourWheelController : public rclcpp::Node
 {
 public:
-  DifferentialDriveController()
-  : Node("diff_drive_controller"), 
-    count_(0),
-    // Initial wheel positions
-    current_positions_{0.0, 0.0, 0.0, 0.0},
-    // Default parameters (you can later load these from a parameter server)
-    wheel_radius_(0.1),
-    wheel_offset_y_(0.2)  // Example: (chassis_width/2 + wheel_thickness/2). Adjust as needed.
+  FourWheelController()
+  : Node("four_wheel_controller"),
+    wheel_separation_(0.4),    // Distance between left/right wheels (2 * wheel_offset_y)
+    wheel_base_(0.6),          // Distance between front/rear wheels
+    wheel_radius_(0.1)
   {
-    // Publisher for the joint trajectory (to the joint trajectory controller)
     publisher_ = this->create_publisher<trajectory_msgs::msg::JointTrajectory>(
       "/joint_trajectory_controller/joint_trajectory", 10);
 
-    // Subscriber to Twist commands (for mobile base movement)
     cmd_vel_sub_ = this->create_subscription<geometry_msgs::msg::Twist>(
       "/cmd_vel", 10,
-      std::bind(&DifferentialDriveController::cmdVelCallback, this, std::placeholders::_1));
+      [this](const geometry_msgs::msg::Twist::SharedPtr msg) {
+        last_cmd_ = *msg;
+        RCLCPP_DEBUG(this->get_logger(), "Cmd_vel: lin.x=%.2f ang.z=%.2f", 
+                     msg->linear.x, msg->angular.z);
+      });
 
-    // Timer callback at 100ms
     timer_ = this->create_wall_timer(
-      100ms, std::bind(&DifferentialDriveController::timerCallback, this));
+      50ms, [this]() { this->updateWheelVelocities(); });
 
-    // Initialize last_cmd with zeros
-    last_cmd_.linear.x = 0.0;
-    last_cmd_.angular.z = 0.0;
+    declare_parameter("wheel_names", std::vector<std::string>{
+      "first_wheel_joint", "second_wheel_joint", 
+      "third_wheel_joint", "fourth_wheel_joint"});
+
+    // Initialize wheel positions for all four wheels
+    current_positions_ = {0.0, 0.0, 0.0, 0.0};
   }
 
 private:
-  // Callback to update the desired robot twist command
-  void cmdVelCallback(const geometry_msgs::msg::Twist::SharedPtr msg)
+  void updateWheelVelocities()
   {
-    // Store the latest command
-    last_cmd_ = *msg;
-    RCLCPP_INFO(this->get_logger(), "Received cmd_vel: linear=%f, angular=%f",
-                msg->linear.x, msg->angular.z);
-  }
+    const double dt = 0.05; // Timer period: 50ms
+    const double linear = last_cmd_.linear.x;
+    const double angular = last_cmd_.angular.z;
 
-  // Timer callback: compute wheel velocities from the Twist command and publish a trajectory message
-  void timerCallback()
-  {
-    // Differential drive kinematics:
-    // For a given desired linear velocity v and angular velocity w,
-    // left wheel velocity = (v + w * (wheel_offset_y_)) / wheel_radius_
-    // right wheel velocity = (v - w * (wheel_offset_y_)) / wheel_radius_
-    double v = last_cmd_.linear.x;
-    double w = last_cmd_.angular.z;
+    // Four-wheel skid-steer kinematics:
+    // For left wheels: (linear - angular * (wheel_separation_/2)) / wheel_radius_
+    // For right wheels: (linear + angular * (wheel_separation_/2)) / wheel_radius_
+    const double left_speed = (linear - angular * wheel_separation_ / 2.0) / wheel_radius_;
+    const double right_speed = (linear + angular * wheel_separation_ / 2.0) / wheel_radius_;
 
-    double left_wheel_velocity  = (v + w * wheel_offset_y_) / wheel_radius_;
-    double right_wheel_velocity = (v - w * wheel_offset_y_) / wheel_radius_;
-
-    // For our 4-wheel robot, assume:
-    // Wheels 2 and 3 (left side) get left_wheel_velocity
-    // Wheels 1 and 4 (right side) get right_wheel_velocity
-    std::vector<double> wheel_velocities = {
-      right_wheel_velocity, // first_wheel_joint
-      left_wheel_velocity,  // second_wheel_joint
-      left_wheel_velocity,  // third_wheel_joint
-      right_wheel_velocity  // fourth_wheel_joint
+    // Map computed speeds to individual wheels.
+    // Front wheels are inverted (due to URDF axis inversion)
+    std::vector<double> velocities = {
+      -right_speed,   // Front-right (first_wheel_joint)
+      -left_speed,    // Front-left (second_wheel_joint)
+      left_speed,     // Rear-left (third_wheel_joint)
+      right_speed     // Rear-right (fourth_wheel_joint)
     };
 
-    // For this simple demo, integrate velocity to update wheel positions (dt = 0.1s)
-    double dt = 0.1;
+    // Integrate velocities over dt to update positions
     for (size_t i = 0; i < current_positions_.size(); ++i) {
-      current_positions_[i] += wheel_velocities[i] * dt;
+      current_positions_[i] += velocities[i] * dt;
     }
 
-    // Construct the trajectory message
-    auto traj_msg = trajectory_msgs::msg::JointTrajectory();
-    traj_msg.joint_names = {"first_wheel_joint", "second_wheel_joint", "third_wheel_joint", "fourth_wheel_joint"};
-    
-    trajectory_msgs::msg::JointTrajectoryPoint point;
-    point.positions = current_positions_;
-    point.velocities = wheel_velocities;
-    point.time_from_start = rclcpp::Duration::from_seconds(1.0);
-    traj_msg.points.push_back(point);
-
-    publisher_->publish(traj_msg);
-
-    RCLCPP_INFO(this->get_logger(), "Published wheel velocities: [%.2f, %.2f, %.2f, %.2f]",
-                wheel_velocities[0], wheel_velocities[1],
-                wheel_velocities[2], wheel_velocities[3]);
-
-    count_++;
+    publishJointTrajectory(velocities, current_positions_);
   }
 
-  // Members
+  void publishJointTrajectory(const std::vector<double>& velocities,
+                              const std::vector<double>& positions)
+  {
+    trajectory_msgs::msg::JointTrajectory msg;
+    msg.joint_names = get_parameter("wheel_names").as_string_array();
+
+    trajectory_msgs::msg::JointTrajectoryPoint point;
+    point.time_from_start = rclcpp::Duration(100ms);
+    point.velocities = velocities;
+    point.positions = positions;  // Provide positions to avoid mismatch errors
+
+    msg.points.push_back(point);
+    publisher_->publish(msg);
+
+    RCLCPP_DEBUG(this->get_logger(), "Wheel velocities: FR=%.2f FL=%.2f RL=%.2f RR=%.2f",
+                 velocities[0], velocities[1], velocities[2], velocities[3]);
+  }
+
+  // Member variables
   rclcpp::TimerBase::SharedPtr timer_;
   rclcpp::Publisher<trajectory_msgs::msg::JointTrajectory>::SharedPtr publisher_;
   rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr cmd_vel_sub_;
-  size_t count_;
-  std::vector<double> current_positions_;
-
-  // Last received Twist command
   geometry_msgs::msg::Twist last_cmd_;
 
-  // Parameters for kinematics
+  // Robot parameters
+  double wheel_separation_;
+  double wheel_base_;
   double wheel_radius_;
-  double wheel_offset_y_;
+
+  // Current wheel positions (integrated over time)
+  std::vector<double> current_positions_;
 };
 
-int main(int argc, char *argv[])
+int main(int argc, char** argv)
 {
   rclcpp::init(argc, argv);
-  rclcpp::spin(std::make_shared<DifferentialDriveController>());
+  rclcpp::spin(std::make_shared<FourWheelController>());
   rclcpp::shutdown();
   return 0;
 }

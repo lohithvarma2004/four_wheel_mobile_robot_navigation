@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <robot name="prime" xmlns:xacro="http://www.ros.org/wiki/xacro">
 
-  <!-- Define new materials -->
+  <!-- Define materials -->
   <material name="red">
     <color rgba="1 0 0 1"/>
   </material>
@@ -9,16 +9,26 @@
     <color rgba="0 0 1 1"/>
   </material>
 
-  <!-- Properties -->
+  <!-- Geometry and mass properties -->
   <xacro:property name="wheel_radius" value="0.1"/>
   <xacro:property name="wheel_thickness" value="0.1"/>
   <xacro:property name="chassis_length" value="0.6"/>
   <xacro:property name="chassis_width" value="0.3"/>
-  <xacro:property name="wheel_offset_y" value="${(chassis_width/2)+(wheel_thickness/2)}"/>
-  <xacro:property name="chassis_mass" value="0.2"/>
-  <xacro:property name="wheel_mass" value="0.02"/>
+  <xacro:property name="wheel_offset_y" value="${(chassis_width/2) + (wheel_thickness/2)}"/>
+  <xacro:property name="chassis_mass" value="5"/>
+  <xacro:property name="wheel_mass" value="0.5"/>
 
-  <!-- Chassis link (base) using blue material -->
+  <!-- Inertia calculations for the chassis (box shape) -->
+  <xacro:property name="chassis_Ixx" value="${chassis_mass/12 * ((chassis_width**2) + (0.1**2))}"/>
+  <xacro:property name="chassis_Iyy" value="${chassis_mass/12 * ((chassis_length**2) + (0.1**2))}"/>
+  <xacro:property name="chassis_Izz" value="${chassis_mass/12 * ((chassis_length**2) + (chassis_width**2))}"/>
+
+  <!-- Inertia calculations for the wheels (cylinder shape) -->
+  <xacro:property name="wheel_Ixx" value="${wheel_mass/12 * (3*(wheel_radius**2) + (wheel_thickness**2))}"/>
+  <xacro:property name="wheel_Iyy" value="${wheel_mass/12 * (3*(wheel_radius**2) + (wheel_thickness**2))}"/>
+  <xacro:property name="wheel_Izz" value="${wheel_mass/2 * (wheel_radius**2)}"/>
+
+  <!-- Chassis Link -->
   <link name="chassis">
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
@@ -28,21 +38,25 @@
       <material name="blue"/>
     </visual>
     <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
         <box size="${chassis_length} ${chassis_width} 0.1"/>
       </geometry>
-      <gazebo>
-        <mu1>0.8</mu1>
-        <mu2>0.2</mu2>
-      </gazebo>
     </collision>
     <inertial>
+      <origin xyz="0 0 -0.03"/> 
       <mass value="${chassis_mass}"/>
-      <inertia ixx="1.0" ixy="0.0" iyy="1.0" izz="1.0" iyz="0.0" ixz="0.0"/>
+      <inertia 
+          ixx="${chassis_Ixx}" 
+          ixy="0.0" 
+          iyy="${chassis_Iyy}" 
+          izz="${chassis_Izz}" 
+          iyz="0.0" 
+          ixz="0.0"/>
     </inertial>
   </link>
 
-  <!-- Wheel links (all wheels use red material) -->
+  <!-- Wheel Links -->
   <link name="wheel_1">
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
@@ -52,17 +66,26 @@
       <material name="red"/>
     </visual>
     <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
         <cylinder radius="${wheel_radius}" length="${wheel_thickness}"/>
       </geometry>
       <gazebo>
-        <mu1>0.8</mu1>
-        <mu2>0.2</mu2>
+        <mu1>0.6</mu1>
+        <mu2>0.55</mu2>
+        <kp>100000</kp>  
+        <kd>500</kd>      
       </gazebo>
     </collision>
     <inertial>
       <mass value="${wheel_mass}"/>
-      <inertia ixx="0.1" ixy="0.0" iyy="0.1" iyz="0.0" izz="0.1" ixz="0.0"/>
+      <inertia 
+          ixx="${wheel_Ixx}" 
+          ixy="0.0" 
+          iyy="${wheel_Iyy}" 
+          izz="${wheel_Izz}" 
+          iyz="0.0" 
+          ixz="0.0"/>
     </inertial>
   </link>
 
@@ -75,17 +98,26 @@
       <material name="red"/>
     </visual>
     <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
         <cylinder radius="${wheel_radius}" length="${wheel_thickness}"/>
       </geometry>
       <gazebo>
-        <mu1>0.8</mu1>
-        <mu2>0.2</mu2>
+        <mu1>0.6</mu1>
+        <mu2>0.55</mu2>
+        <kp>100000</kp>  
+        <kd>500</kd>    
       </gazebo>
     </collision>
     <inertial>
       <mass value="${wheel_mass}"/>
-      <inertia ixx="0.1" ixy="0.0" iyy="0.1" iyz="0.0" izz="0.1" ixz="0.0"/>
+      <inertia 
+          ixx="${wheel_Ixx}" 
+          ixy="0.0" 
+          iyy="${wheel_Iyy}" 
+          izz="${wheel_Izz}" 
+          iyz="0.0" 
+          ixz="0.0"/>
     </inertial>
   </link>
 
@@ -98,17 +130,26 @@
       <material name="red"/>
     </visual>
     <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
         <cylinder radius="${wheel_radius}" length="${wheel_thickness}"/>
       </geometry>
       <gazebo>
-        <mu1>0.8</mu1>
-        <mu2>0.2</mu2>
+        <mu1>0.6</mu1>
+        <mu2>0.55</mu2>
+        <kp>100000</kp>  
+        <kd>500</kd>    
       </gazebo>
     </collision>
     <inertial>
       <mass value="${wheel_mass}"/>
-      <inertia ixx="0.1" ixy="0.0" iyy="0.1" iyz="0.0" izz="0.1" ixz="0.0"/>
+      <inertia 
+          ixx="${wheel_Ixx}" 
+          ixy="0.0" 
+          iyy="${wheel_Iyy}" 
+          izz="${wheel_Izz}" 
+          iyz="0.0" 
+          ixz="0.0"/>
     </inertial>
   </link>
 
@@ -121,13 +162,26 @@
       <material name="red"/>
     </visual>
     <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
         <cylinder radius="${wheel_radius}" length="${wheel_thickness}"/>
       </geometry>
+      <gazebo>
+        <mu1>0.6</mu1>
+        <mu2>0.55</mu2>
+        <kp>100000</kp>  
+        <kd>500</kd>    
+      </gazebo>
     </collision>
     <inertial>
       <mass value="${wheel_mass}"/>
-      <inertia ixx="0.1" ixy="0.0" iyy="0.1" iyz="0.0" izz="0.1" ixz="0.0"/>
+      <inertia 
+          ixx="${wheel_Ixx}" 
+          ixy="0.0" 
+          iyy="${wheel_Iyy}" 
+          izz="${wheel_Izz}" 
+          iyz="0.0" 
+          ixz="0.0"/>
     </inertial>
   </link>
 
@@ -136,23 +190,26 @@
     <origin xyz="${chassis_length/2} ${-wheel_offset_y} 0" rpy="1.57 0 0"/>
     <parent link="chassis"/>
     <child link="wheel_1"/>
-    <limit lower="-3.14" upper="3.14" effort="10" velocity="10"/>
-    <axis xyz="0 0 1"/>
+    <limit lower="-3.14" upper="3.14" effort="2" velocity="4"/>
+    <dynamics damping="0.2"/> 
+    <axis xyz="0 0 -1"/>
   </joint>
 
   <joint name="second_wheel_joint" type="revolute">
     <origin xyz="${chassis_length/2} ${wheel_offset_y} 0" rpy="1.57 0 0"/>
     <parent link="chassis"/>
     <child link="wheel_2"/>
-    <limit lower="-3.14" upper="3.14" effort="10" velocity="10"/>
-    <axis xyz="0 0 1"/>
+    <limit lower="-3.14" upper="3.14" effort="2" velocity="4"/>
+    <dynamics damping="0.2"/> 
+    <axis xyz="0 0 -1"/>
   </joint>
 
   <joint name="third_wheel_joint" type="revolute">
     <origin xyz="${-chassis_length/2} ${wheel_offset_y} 0" rpy="1.57 0 0"/>
     <parent link="chassis"/>
     <child link="wheel_3"/>
-    <limit lower="-3.14" upper="3.14" effort="10" velocity="10"/>
+    <limit lower="-3.14" upper="3.14" effort="2" velocity="4"/>
+    <dynamics damping="0.2"/> 
     <axis xyz="0 0 1"/>
   </joint>
 
@@ -160,12 +217,12 @@
     <origin xyz="${-chassis_length/2} ${-wheel_offset_y} 0" rpy="1.57 0 0"/>
     <parent link="chassis"/>
     <child link="wheel_4"/>
-    <limit lower="-3.14" upper="3.14" effort="10" velocity="10"/>
+    <limit lower="-3.14" upper="3.14" effort="2" velocity="4"/>
+    <dynamics damping="0.2"/> 
     <axis xyz="0 0 1"/>
   </joint>
 
-
-  <!-- ros2_control configuration using velocity command interfaces for each wheel -->
+  <!-- ros2_control configuration -->
   <ros2_control name="Gazebosim" type="system">
     <hardware>
       <plugin>gazebo_ros2_control/GazeboSystem</plugin>
@@ -192,11 +249,11 @@
     </joint>
   </ros2_control>
 
-  <!-- Gazebo plugin for ros2_control -->
   <gazebo>
     <plugin name="gazebo_ros2_control" filename="libgazebo_ros2_control.so">
-      <robotNamespace>/</robotNamespace>
+      <robot_namespace>/</robot_namespace>
       <parameters>$(find four_wheel_mobile_robot_navigation)/config/my_controllers.yaml</parameters>
+      <controller_manager_node_name>controller_manager</controller_manager_node_name>
     </plugin>
   </gazebo>
 
