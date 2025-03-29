@@ -38,13 +38,6 @@ def generate_launch_description():
         output="screen"
     )
     
-    # Launch the controller manager (ros2_control_node)
-    controller_manager_node = Node(
-        package="controller_manager",
-        executable="ros2_control_node",
-        parameters=[{"robot_description": robotdescription, "use_sim_time": True}],
-        output="screen"
-    )
 
     # Delay loading controllers to allow the controller manager to fully initialize
     load_joint_state_broadcaster = TimerAction(
@@ -71,7 +64,6 @@ def generate_launch_description():
     ld.add_action(gazebo_launch)
     ld.add_action(spawnnode)
     ld.add_action(statenode)
-    ld.add_action(controller_manager_node)
     ld.add_action(load_joint_state_broadcaster)
     ld.add_action(load_joint_trajectory_controller)
 
